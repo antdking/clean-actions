@@ -1,0 +1,41 @@
+---
+it: Adds 'runs-on' to all Jobs when 'runs-on' is defined
+given:
+  runs-on: ubuntu-latest
+  jobs:
+    job_1: {}
+    job_2: {}
+expect:
+  jobs:
+    job_1:
+      runs-on: ubuntu-latest
+    job_2:
+      runs-on: ubuntu-latest
+
+---
+it: Does not add 'runs-on' to jobs that already define it
+given:
+  runs-on: ubuntu-latest
+  jobs:
+    job_without_runs_on: {}
+    job_with_runs_on:
+      runs-on: something-else
+expect:
+  jobs:
+    job_without_runs_on:
+      runs-on: ubuntu-latest
+    job_with_runs_on:
+      runs-on: something-else
+
+---
+it: Does not add 'runs-on' when 'runs-on' is not defined
+given:
+  jobs:
+    job_without_runs_on: {}
+    job_with_runs_on:
+      runs-on: something-else
+expect:
+  jobs:
+    job_without_runs_on: {}
+    job_with_runs_on:
+      runs-on: something-else
