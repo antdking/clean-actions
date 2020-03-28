@@ -1,0 +1,29 @@
+[build-system]
+requires = ["flit_core >=2,<3"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.metadata]
+module = "clean_actions"
+author = "Anthony King"
+description-file = "README.md"
+home-page = "https://github.com/cybojenix/clean-actions"
+classifiers = ["License :: OSI Approved :: MIT License"]
+
+[tool.flit.metadata.requires-extra]
+test = [
+  "pytest",
+  "pytest-cov",
+  "pytest-randomly",
+]
+dev = [
+  "autoflake",
+  "black",
+  "isort",
+]
+
+[tool.isort]
+multi_line_output=3
+include_trailing_comma=true
+force_grid_wrap=0
+use_parentheses=true
+line_length=88
