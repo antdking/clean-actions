@@ -17,7 +17,7 @@ of functionality available.
 
 ## Contributing
 
-
+Contributions are welcome! See the [Contributing Guide][contributing] for more details
 
 [test-cases]: ./tests/cases/
 [contributing]: ./contributing.md
