@@ -1,0 +1,63 @@
+---
+it: Can define an output on a command
+given:
+  jobs:
+    job_1:
+      steps:
+        - run: echo 'in job_1'
+        - command: command_1
+          id: command-one
+        - run: echo "${{ steps.command-one.outputs.foo }}"
+  commands:
+    command_1:
+      steps:
+        - run: echo 'in command_1'
+        - run: echo "::set-output name=foo::bar"
+          id: step-one
+      outputs:
+        foo: steps.step-one.outputs.foo
+expect:
+  jobs:
+    job_1:
+      steps:
+        - run: echo 'in job_1'
+        - run: echo 'in command_1'
+        - run: echo "::set-output name=foo::bar"
+          id: command-one__step-one
+        - run: echo "${{ steps.command-one__step-one.outputs.foo }}"
+
+---
+it: Can pass an output through a chain of commands
+given:
+  jobs:
+    job_1:
+      steps:
+        - run: echo 'in job_1'
+        - command: command_2
+          id: command-two
+        - run: echo "${{ steps.command-two.outputs.foo }}"
+  commands:
+    command_1:
+      steps:
+        - run: echo 'in command_1'
+        - run: echo "::set-output name=foo::bar"
+          id: step-one
+      outputs:
+        foo: steps.step-one.outputs.foo
+    command_2:
+      steps:
+        - run: echo 'in command_2'
+        - command: command_1
+          id: command-one
+      outputs:
+        foo: steps.command-one.outputs.foo
+expect:
+  jobs:
+    job_1:
+      steps:
+        - run: echo 'in job_1'
+        - run: echo 'in command_2'
+        - run: echo 'in command_1'
+        - run: echo "::set-output name=foo::bar"
+          id: command-two__command-one__step-one
+        - run: echo "${{ steps.command-two__command-one__step-one.outputs.foo }}"
