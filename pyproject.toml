@@ -21,16 +21,22 @@ classifiers = [
   "Topic :: Software Development :: Testing",
 ]
 
+requires = [
+  "ruamel.yaml",
+]
+
 [tool.flit.metadata.requires-extra]
 test = [
   "pytest",
   "pytest-cov",
   "pytest-randomly",
+  "py",
 ]
 dev = [
   "autoflake",
   "black",
   "isort",
+  "mypy",
 ]
 
 [tool.isort]
