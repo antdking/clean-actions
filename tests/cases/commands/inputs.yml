@@ -1,0 +1,48 @@
+---
+it: Can take an input in a command
+given:
+  jobs:
+    job_1:
+      steps:
+        command: some-command
+        with:
+          some-input: Hello, World
+  commands:
+    some-command:
+      inputs:
+        some-input:
+      steps:
+        - run: echo '${{ inputs.some-input }}'
+expect:
+  jobs:
+    job_1:
+      steps:
+        - run: echo 'Hello, World'
+
+---
+it: Can pass an input through a command chain
+given:
+  jobs:
+    job_1:
+      steps:
+        command: some-command
+        with:
+          some-input: Hello, World
+  commands:
+    some-command:
+      inputs:
+        some-input:
+      steps:
+        - command: second-command
+          with:
+            second-input: '${{ inputs.some-input }}'
+    second-command:
+      inputs:
+        second-input:
+      steps:
+        - run: echo '${{ inputs.second-input }}'
+expect:
+  jobs:
+    job_1:
+      steps:
+        - run: echo 'Hello, World'
