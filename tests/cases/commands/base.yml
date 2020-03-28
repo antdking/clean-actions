@@ -1,0 +1,70 @@
+---
+it: Expands a command into the Job's steps
+given:
+  jobs:
+    job_1:
+      steps:
+        - command: some-command
+  commands:
+    some-command:
+      steps:
+        - run: some step
+        - run: some other step
+expect:
+  jobs:
+    job_1:
+      steps:
+        - run: some step
+        - run: some other step
+
+---
+it: Expands a chained command into the Job's steps
+given:
+  jobs:
+    job_1:
+      steps:
+        - command: some-command
+  commands:
+    some-command:
+      steps:
+        - run: some step
+        - run: some other step
+        - command: second-command
+    second-command:
+      steps:
+        - run: some second command step
+expect:
+  jobs:
+    job_1:
+      steps:
+        - run: some step
+        - run: some other step
+        - run: some second command step
+
+---
+it: Expands a command into multiple Job's steps
+given:
+  jobs:
+    job_1:
+      steps:
+        - command: some-command
+    job_2:
+      steps:
+        - run: job_2
+        - command: some-command
+  commands:
+    some-command:
+      steps:
+        - run: some step
+        - run: some other step
+expect:
+  jobs:
+    job_1:
+      steps:
+        - run: some step
+        - run: some other step
+    job_2:
+      steps:
+        - run: job_2
+        - run: some step
+        - run: some other step
