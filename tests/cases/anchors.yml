@@ -1,0 +1,40 @@
+---
+it: Strips any tags with an 'x-' prefix at the global scope
+given:
+  x-foo:
+    bar: bazz
+  jobs:
+    x-foo:
+      bar: bazz
+expect:
+  jobs:
+    x-foo:
+      bar: bazz
+
+---
+it: expands aliases
+given:
+  x-foo: &foo
+    bar: bazz
+  jobs:
+    foo: *foo
+expect:
+  jobs:
+    foo:
+      bar: bazz
+
+---
+it: Allows aliases to have keys overwritten
+given:
+  x-foo: &foo
+    bar: bazz
+    hello: world
+  jobs:
+    foo:
+      <<: *foo
+      hello: goodbye
+expect:
+  jobs:
+    foo:
+      bar: bazz
+      hello: goodbye
