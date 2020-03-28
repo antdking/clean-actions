@@ -22,7 +22,7 @@ def pytest_collect_file(
 
 class YamlTestCaseFile(pytest.File):
     def collect(self) -> Iterator["YamlTestCaseItem"]:
-        documents = yaml.load_all(self.fspath.open())
+        documents = list(yaml.load_all(self.fspath.open()))
         for document in documents:
             self.validate_document(document)
             yield YamlTestCaseItem.from_parent(
