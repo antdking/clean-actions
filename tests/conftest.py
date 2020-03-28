@@ -24,15 +24,28 @@ class YamlTestCaseFile(pytest.File):
     def collect(self) -> Iterator["YamlTestCaseItem"]:
         documents = yaml.load_all(self.fspath.open())
         for document in documents:
+            self.validate_document(document)
             yield YamlTestCaseItem.from_parent(
                 self, name=document["it"], document=document, fspath=self.fspath
             )
 
+    @classmethod
+    def validate_document(cls, document):
+        document_keys = list(document.keys())
+        line_number = document.lc.line
+        errors = []
+        if "it" not in document_keys:
+            errors.append(f"Missing 'it' statement in document, line {line_number}")
+        if "given" not in document_keys:
+            errors.append(f"Missing 'given' statement in document, line {line_number}")
+        if "expect" not in document_keys:
+            errors.append(f"Missing 'expect' statement in document, line {line_number}")
+        if errors:
+            raise cls.CollectError("\n".join(errors))
+
 
 class YamlTestCaseItem(pytest.Item):
     def __init__(self, name: str, parent: YamlTestCaseFile, document, fspath):
-        self.validate_document(document)
-
         super().__init__(name, parent)
         self.document = document
         self.fspath
@@ -49,13 +62,6 @@ class YamlTestCaseItem(pytest.Item):
     def module(self):
         # Hack to make pytest-randomly work correctly
         return self.parent
-
-    @classmethod
-    def validate_document(cls, document):
-        document_keys = list(document.keys())
-        assert "it" in document_keys, "Missing 'it' statement in document"
-        assert "given" in document_keys, "Missing 'given' statement in document"
-        assert "expect" in document_keys, "Missing 'expect' statement in document"
 
     def get_given_contents(self) -> str:
         given_io = StringIO()
