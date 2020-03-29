@@ -1,6 +1,6 @@
 import re
 from copy import deepcopy
-from typing import Any, Iterable, Tuple, Union
+from typing import Any, Iterable, List, Tuple, Union
 
 
 def execute(obj: dict) -> None:
@@ -37,6 +37,8 @@ def build_job(obj: dict, job: dict) -> None:
         command, step_env=step_env, global_env={**global_env, **job_env}
     )
     populate_inputs_on_command(command, step.get("with", {}))
+    expand_command_step_ids(command, step.get("id"))
+    expand_output_references(job["steps"], command, step.get("id"))
 
     command_steps = command.get("steps", [])
 
@@ -118,3 +120,38 @@ def find_strings(obj: Union[list, dict]):
             yield obj, idx
         if isinstance(val, (list, dict)):
             yield from find_strings(val)
+
+
+def expand_command_step_ids(command: dict, parent_id: str) -> None:
+    if not parent_id:
+        return
+    for step in command.get("steps", []):
+        if step.get("id"):
+            step["id"] = "__".join([parent_id, step["id"]])
+
+
+def expand_output_references(steps: List[dict], command: dict, parent_id: str) -> None:
+    if not parent_id:
+        return
+    outputs = command.get("outputs", {})
+    if not outputs:
+        return
+
+    for obj, idx in find_strings(steps):
+        old_string = obj[idx]
+        new_string = substitute_outputs_in_string(old_string, outputs, parent_id)
+        obj[idx] = new_string
+
+
+def substitute_outputs_in_string(string, outputs, parent_id):
+    # For now, we're going to be super basic and not support complex expressions.
+    for key, val in outputs.items():
+        before_reference = f"steps.{parent_id}.outputs.{key}"
+        target_reference = re.sub(r"^steps\.", f"steps.{parent_id}__", val)
+        string = re.sub(
+            r"\$\{\{\ *%s\ *\}\}" % before_reference,
+            f"${{{{ {target_reference} }}}}",
+            string,
+        )
+
+    return string
