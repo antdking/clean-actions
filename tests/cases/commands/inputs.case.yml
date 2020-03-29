@@ -4,9 +4,9 @@ given:
   jobs:
     job_1:
       steps:
-        command: some-command
-        with:
-          some-input: Hello, World
+        - command: some-command
+          with:
+            some-input: Hello, World
   commands:
     some-command:
       inputs:
@@ -25,9 +25,9 @@ given:
   jobs:
     job_1:
       steps:
-        command: some-command
-        with:
-          some-input: Hello, World
+        - command: some-command
+          with:
+            some-input: Hello, World
   commands:
     some-command:
       inputs:
