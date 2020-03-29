@@ -1,8 +1,10 @@
 from . import clean, yaml
-from .features import global_run_as
+from .features import global_run_as, strip_x_prefixed_root_tags
 
 _features = [
     global_run_as,
+    # This should go last, in case any other feature wants them.
+    strip_x_prefixed_root_tags,
 ]
 
 
