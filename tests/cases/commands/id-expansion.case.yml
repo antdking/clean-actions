@@ -1,0 +1,49 @@
+---
+it: Prefixes Command steps with an ID
+given:
+  jobs:
+    job_1:
+      steps:
+        - run: echo 'in job_1'
+        - command: command_1
+          id: command-one
+  commands:
+    command_1:
+      steps:
+        - run: echo 'in command_1'
+          id: step-one
+expect:
+  jobs:
+    job_1:
+      steps:
+        - run: echo 'in job_1'
+        - run: echo 'in command_1'
+          id: command-one__step-one
+
+---
+it: Prefixes a chain of command's steps with an ID
+given:
+  jobs:
+    job_1:
+      steps:
+        - run: echo 'in job_1'
+        - command: command_2
+          id: command-two
+  commands:
+    command_1:
+      steps:
+        - run: echo 'in command_1'
+          id: step-one
+    command_2:
+      steps:
+        - run: echo 'in command_2'
+        - command: command_1
+          id: command-one
+expect:
+  jobs:
+    job_1:
+      steps:
+        - run: echo 'in job_1'
+        - run: echo 'in command_2'
+        - run: echo 'in command_1'
+          id: command-two__command-one__step-one
