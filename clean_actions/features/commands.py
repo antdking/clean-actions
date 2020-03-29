@@ -1,4 +1,6 @@
+import re
 from copy import deepcopy
+from typing import Any, Iterable, Tuple, Union
 
 
 def execute(obj: dict) -> None:
@@ -30,9 +32,12 @@ def build_job(obj: dict, job: dict) -> None:
 
     command_name = step["command"]
     command = get_command(obj, command_name)
+
     populate_env_on_command(
         command, step_env=step_env, global_env={**global_env, **job_env}
     )
+    populate_inputs_on_command(command, step.get("with", {}))
+
     command_steps = command.get("steps", [])
 
     # We go in reverse, as we're inserting at the same index each time.
@@ -78,3 +83,38 @@ def populate_env_on_command(command: dict, step_env: dict, global_env: dict) -> 
         # cleanup!
         if not step["env"]:
             step.pop("env")
+
+
+def populate_inputs_on_command(command: dict, inputs: dict) -> None:
+    defined_inputs = command.get("inputs", {})
+
+    if not defined_inputs:
+        # Nothing defined, so not doing anything.
+        # TODO: later, we should validate that there aren't any inputs used.
+        return
+
+    for obj, idx in find_strings(command):
+        old_string = obj[idx]
+        new_string = substitute_inputs_in_string(old_string, inputs)
+        obj[idx] = new_string
+
+
+def substitute_inputs_in_string(string: str, inputs: dict) -> str:
+    # For now, we're going to be super basic and not support complex expressions.
+    for key, val in inputs.items():
+        string = re.sub(r"\$\{\{\ *inputs.%s\ *\}\}" % key, val, string)
+
+    return string
+
+
+def find_strings(obj: Union[list, dict]):
+    if isinstance(obj, dict):
+        iterator = obj.items()  # type: Iterable[Tuple[Union[str, int], Any]]
+    else:
+        iterator = enumerate(obj)
+
+    for idx, val in iterator:
+        if isinstance(val, str):
+            yield obj, idx
+        if isinstance(val, (list, dict)):
+            yield from find_strings(val)
