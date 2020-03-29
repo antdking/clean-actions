@@ -1,9 +1,16 @@
 from . import clean, yaml
-from .features import global_run_as, strip_x_prefixed_root_tags
+from .features import (
+    cleanup_commands,
+    commands,
+    global_run_as,
+    strip_x_prefixed_root_tags,
+)
 
 _features = [
     global_run_as,
-    # This should go last, in case any other feature wants them.
+    commands,
+    # These should go last, in case any other feature wants them.
+    cleanup_commands,
     strip_x_prefixed_root_tags,
 ]
 
