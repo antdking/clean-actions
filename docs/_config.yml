@@ -4,3 +4,6 @@ title: Clean Actions
 description: Clean Actions allows you to define reusable actions within a Workflow
 baseurl: /clean-actions
 url: "https://cybojenix.github.io"
+
+search_enabled: true
+permalink: pretty
