@@ -23,6 +23,7 @@ classifiers = [
 
 requires = [
   "ruamel.yaml",
+  "click",
 ]
 
 [tool.flit.metadata.requires-extra]
