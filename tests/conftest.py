@@ -10,6 +10,8 @@ from pytest import Collector
 import clean_actions
 
 yaml = ruamel.yaml.YAML()
+yaml.preserve_quotes = True
+yaml.width = 1000000000000
 
 
 def pytest_collect_file(
@@ -64,11 +66,15 @@ class YamlTestCaseItem(pytest.Item):
         return self.parent
 
     def get_given_contents(self) -> str:
+        if isinstance(self.document["given"], str):
+            return self.document["given"]
         given_io = StringIO()
         yaml.dump(self.document["given"], given_io)
         return given_io.getvalue()
 
     def get_expect_contents(self) -> str:
+        if isinstance(self.document["expect"], str):
+            return self.document["expect"]
         expect_io = StringIO()
         yaml.dump(self.document["expect"], expect_io)
         return expect_io.getvalue()
