@@ -7,6 +7,9 @@ import ruamel.yaml
 def _yaml(*, output: io.StringIO = None) -> ruamel.yaml.YAML:
     yaml = ruamel.yaml.YAML(output=output)
 
+    yaml.preserve_quotes = True
+    yaml.width = 100000000000
+
     # Strip out aliases + anchors when dumping
     yaml.constructor.flatten_mapping = _flatten_mapping(yaml.constructor)
     yaml.representer.ignore_aliases = lambda x: True

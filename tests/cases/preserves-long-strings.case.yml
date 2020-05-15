@@ -1,0 +1,6 @@
+---
+it: Does not wrap long strings
+given: |
+  foo: This is a really really really really really really long string that we don't want to wrap
+expect: |
+  foo: This is a really really really really really really long string that we don't want to wrap

@@ -1,0 +1,20 @@
+---
+it: Preserves double quotes on a string
+given: |
+  foo: "bar"
+expect: |
+  foo: "bar"
+
+---
+it: Preserves single quotes on a string
+given: |
+  foo: 'bar'
+expect: |
+  foo: 'bar'
+
+---
+it: Preserves no quotes on a string
+given: |
+  foo: bar
+expect: |
+  foo: bar
